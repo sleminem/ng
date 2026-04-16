@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>导航首页</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-hover: #f1f5f9;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --border: #e2e8f0;
+            --radius: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        /* 顶部搜索区域 */
+        .search-area {
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .search-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 600px;
+            display: flex;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: 0.15s ease;
+        }
+
+        .search-container:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            background: transparent;
+            font-size: 15px;
+            color: var(--text-primary);
+            outline: none;
+        }
+
+        .search-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .engine-selector {
+            position: relative;
+            border-left: 1px solid var(--border);
+        }
+
+        .engine-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 12px 14px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-secondary);
+            transition: 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .engine-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .engine-btn .arrow {
+            font-size: 10px;
+            transition: transform 0.15s ease;
+        }
+
+        .engine-selector.open .engine-btn .arrow {
+            transform: rotate(180deg);
+        }
+
+        .engine-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            min-width: 120px;
+            z-index: 100;
+            display: none;
+        }
+
+        .engine-selector.open .engine-dropdown {
+            display: block;
+        }
+
+        .engine-option {
+            display: block;
+            width: 100%;
+            padding: 10px 16px;
+            text-align: left;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-primary);
+            transition: 0.15s ease;
+        }
+
+        .engine-option:hover {
+            background: var(--bg-hover);
+        }
+
+        .engine-option.active {
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        .search-btn {
+            padding: 12px 18px;
+            background: var(--accent);
+            border: none;
+            cursor: pointer;
+            color: white;
+            font-size: 14px;
+            transition: 0.15s ease;
+        }
+
+        .search-btn:hover {
+            background: var(--accent-hover);
+        }
+
+        /* 主布局 */
+        .main-wrapper {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px 32px;
+            gap: 32px;
+        }
+
+        /* 左侧导航 */
+        .sidebar {
+            width: 180px;
+            flex-shrink: 0;
+        }
+
+        .category-nav {
+            position: sticky;
+            top: 100px;
+        }
+
+        .category-item {
+            display: block;
+            padding: 10px 16px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 14px;
+            transition: 0.15s ease;
+            text-decoration: none;
+            border-radius: var(--radius);
+        }
+
+        .category-item:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .category-item.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        /* 右侧内容区 */
+        .content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .category-section {
+            margin-bottom: 40px;
+            scroll-margin-top: 100px;
+        }
+
+        .category-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .category-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .category-count {
+            font-size: 13px;
+            color: var(--text-secondary);
+            background: var(--bg-secondary);
+            padding: 2px 10px;
+            border-radius: 12px;
+        }
+
+        .sites-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 12px;
+        }
+
+        .site-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 14px;
+            text-decoration: none;
+            color: inherit;
+            transition: 0.15s ease;
+        }
+
+        .site-card:hover {
+            background: var(--bg-hover);
+            border-color: #cbd5e1;
+        }
+
+        .site-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .site-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        /* 响应式 */
+        @media (max-width: 1024px) {
+            .main-wrapper {
+                flex-direction: column;
+                padding: 20px;
+            }
+
+            .sidebar {
+                width: 100%;
+                position: relative;
+                top: 0;
+            }
+
+            .category-nav {
+                position: static;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .category-item {
+                display: inline-block;
+                padding: 8px 16px;
+                background: var(--bg-secondary);
+                border: 1px solid var(--border);
+                border-radius: 20px;
+            }
+
+            .category-item.active {
+                background: var(--accent);
+                border-color: var(--accent);
+            }
+
+            .sites-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .search-area {
+                padding: 12px 16px;
+            }
+
+            .search-wrapper {
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+
+            .logo {
+                font-size: 18px;
+            }
+
+            .search-container {
+                max-width: 100%;
+                order: 3;
+                width: 100%;
+            }
+
+            .engine-btn span:first-child {
+                display: none;
+            }
+
+            .main-wrapper {
+                padding: 16px;
+            }
+
+            .category-section {
+                scroll-margin-top: 80px;
+            }
+
+            .category-title {
+                font-size: 16px;
+            }
+
+            .sites-grid {
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sites-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .search-btn span {
+                display: none;
+            }
+
+            .search-btn {
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="search-area">
+        <div class="search-wrapper">
+            <div class="logo">导航首页</div>
+            <div class="search-container">
+                <input type="text" class="search-input" id="searchInput" placeholder="输入关键词搜索..." autocomplete="off">
+                <div class="engine-selector" id="engineSelector">
+                    <button class="engine-btn" type="button" id="engineBtn">
+                        <span>Google</span>
+                        <span class="arrow">▼</span>
+                    </button>
+                    <div class="engine-dropdown" id="engineDropdown">
+                        <button class="engine-option active" data-engine="google" data-name="Google" type="button">Google</button>
+                        <button class="engine-option" data-engine="baidu" data-name="百度" type="button">百度</button>
+                        <button class="engine-option" data-engine="bing" data-name="Bing" type="button">Bing</button>
+                        <button class="engine-option" data-engine="sogou" data-name="搜狗" type="button">搜狗</button>
+                    </div>
+                </div>
+                <button class="search-btn" id="searchBtn" type="button">
+                    <span>搜索</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-wrapper">
+        <aside class="sidebar">
+            <nav class="category-nav" id="categoryNav"></nav>
+        </aside>
+
+        <main class="content" id="contentArea"></main>
+    </div>
+
+    <script>
+        const sites = [
+            { name: '微信', desc: '腾讯即时通讯', url: 'https://weixin.qq.com', category: 'social' },
+            { name: '微博', desc: '社交媒体平台', url: 'https://weibo.com', category: 'social' },
+            { name: '小红书', desc: '生活方式分享', url: 'https://xiaohongshu.com', category: 'social' },
+            { name: '抖音', desc: '短视频社交', url: 'https://www.douyin.com', category: 'social' },
+            { name: '知乎', desc: '问答社区', url: 'https://www.zhihu.com', category: 'social' },
+            { name: 'Twitter', desc: '社交新闻', url: 'https://twitter.com', category: 'social' },
+            { name: 'Instagram', desc: '图片社交', url: 'https://www.instagram.com', category: 'social' },
+            { name: 'LinkedIn', desc: '职业社交', url: 'https://www.linkedin.com', category: 'social' },
+
+            { name: '百度', desc: '中文搜索', url: 'https://www.baidu.com', category: 'search' },
+            { name: 'Google', desc: '全球搜索', url: 'https://www.google.com', category: 'search' },
+            { name: 'Bing', desc: '微软搜索', url: 'https://www.bing.com', category: 'search' },
+            { name: '搜狗', desc: '中文搜索', url: 'https://www.sogou.com', category: 'search' },
+            { name: '360搜索', desc: '安全搜索', url: 'https://www.so.com', category: 'search' },
+
+            { name: '百度翻译', desc: '多语言翻译', url: 'https://fanyi.baidu.com', category: 'tools' },
+            { name: '有道翻译', desc: '智能翻译', url: 'https://dict.youdao.com', category: 'tools' },
+            { name: '幕布', desc: '思维导图', url: 'https://mubu.com', category: 'tools' },
+            { name: 'Notion', desc: '协作文档', url: 'https://www.notion.so', category: 'tools' },
+            { name: 'Slack', desc: '团队协作', url: 'https://slack.com', category: 'tools' },
+
+            { name: '哔哩哔哩', desc: '视频弹幕', url: 'https://www.bilibili.com', category: 'video' },
+            { name: '优酷', desc: '在线视频', url: 'https://www.youku.com', category: 'video' },
+            { name: '爱奇艺', desc: '流媒体', url: 'https://www.iqiyi.com', category: 'video' },
+            { name: '腾讯视频', desc: '视频播放', url: 'https://v.qq.com', category: 'video' },
+            { name: 'YouTube', desc: '全球视频', url: 'https://www.youtube.com', category: 'video' },
+            { name: 'Netflix', desc: '流媒体', url: 'https://www.netflix.com', category: 'video' },
+            { name: 'Spotify', desc: '音乐流媒体', url: 'https://www.spotify.com', category: 'video' },
+
+            { name: '今日头条', desc: '个性化资讯', url: 'https://www.toutiao.com', category: 'news' },
+            { name: '腾讯新闻', desc: '实时新闻', url: 'https://news.qq.com', category: 'news' },
+            { name: '网易新闻', desc: '新闻聚合', url: 'https://news.163.com', category: 'news' },
+            { name: '36氪', desc: '科技资讯', url: 'https://36kr.com', category: 'news' },
+            { name: '虎嗅', desc: '商业资讯', url: 'https://www.huxiu.com', category: 'news' },
+            { name: 'BBC', desc: '国际新闻', url: 'https://www.bbc.com', category: 'news' },
+
+            { name: '淘宝', desc: '综合购物', url: 'https://www.taobao.com', category: 'shopping' },
+            { name: '京东', desc: '品质商城', url: 'https://www.jd.com', category: 'shopping' },
+            { name: '天猫', desc: '品牌商城', url: 'https://www.tmall.com', category: 'shopping' },
+            { name: '拼多多', desc: '社交电商', url: 'https://www.pinduoduo.com', category: 'shopping' },
+            { name: '亚马逊', desc: '全球购物', url: 'https://www.amazon.com', category: 'shopping' },
+            { name: '得物', desc: '潮流商品', url: 'https://www.dewu.com', category: 'shopping' },
+
+            { name: '花瓣网', desc: '设计灵感', url: 'https://www.huaban.com', category: 'design' },
+            { name: '站酷', desc: '设计师社区', url: 'https://www.zcool.com', category: 'design' },
+            { name: 'Behance', desc: '创意设计', url: 'https://www.behance.net', category: 'design' },
+            { name: 'Dribbble', desc: '作品展示', url: 'https://dribbble.com', category: 'design' },
+            { name: 'Figma', desc: '协作设计', url: 'https://www.figma.com', category: 'design' },
+            { name: 'Pinterest', desc: '灵感图库', url: 'https://www.pinterest.com', category: 'design' },
+
+            { name: 'GitHub', desc: '代码托管', url: 'https://github.com', category: 'dev' },
+            { name: 'Stack Overflow', desc: '技术问答', url: 'https://stackoverflow.com', category: 'dev' },
+            { name: '掘金', desc: '技术文章', url: 'https://juejin.cn', category: 'dev' },
+            { name: 'CSDN', desc: '程序员社区', url: 'https://www.csdn.net', category: 'dev' },
+            { name: 'V2EX', desc: '程序员社区', url: 'https://www.v2ex.com', category: 'dev' },
+            { name: 'MDN', desc: 'Web文档', url: 'https://developer.mozilla.org', category: 'dev' },
+            { name: 'npm', desc: '包管理', url: 'https://www.npmjs.com', category: 'dev' },
+            { name: 'Docker Hub', desc: '镜像仓库', url: 'https://hub.docker.com', category: 'dev' },
+        ];
+
+        const categories = [
+            { id: 'social', name: '社交媒体' },
+            { id: 'search', name: '搜索引擎' },
+            { id: 'tools', name: '工具效率' },
+            { id: 'video', name: '视频影音' },
+            { id: 'news', name: '新闻资讯' },
+            { id: 'shopping', name: '购物商城' },
+            { id: 'design', name: '设计资源' },
+            { id: 'dev', name: '开发技术' },
+        ];
+
+        const searchEngines = {
+            google: { name: 'Google', url: 'https://www.google.com/search?q=' },
+            baidu: { name: '百度', url: 'https://www.baidu.com/s?wd=' },
+            bing: { name: 'Bing', url: 'https://www.bing.com/search?q=' },
+            sogou: { name: '搜狗', url: 'https://www.sogou.com/web?query=' }
+        };
+
+        let currentEngine = 'google';
+        let activeCategory = null;
+
+        const categoryNav = document.getElementById('categoryNav');
+        const contentArea = document.getElementById('contentArea');
+        const searchInput = document.getElementById('searchInput');
+        const engineSelector = document.getElementById('engineSelector');
+        const engineBtn = document.getElementById('engineBtn');
+        const engineDropdown = document.getElementById('engineDropdown');
+        const searchBtn = document.getElementById('searchBtn');
+
+        function getCategoryCount(categoryId) {
+            return sites.filter(s => s.category === categoryId).length;
+        }
+
+        function filterSites(keyword) {
+            if (!keyword) return sites;
+            const lower = keyword.toLowerCase();
+            return sites.filter(s =>
+                s.name.toLowerCase().includes(lower) ||
+                s.desc.toLowerCase().includes(lower)
+            );
+        }
+
+        function renderNavigation() {
+            categoryNav.innerHTML = categories.map(cat => `
+                <a href="#cat-${cat.id}" class="category-item" data-category="${cat.id}">
+                    ${cat.name}
+                </a>
+            `).join('');
+        }
+
+        function renderContent(keyword = '') {
+            const filtered = filterSites(keyword);
+
+            if (filtered.length === 0) {
+                contentArea.innerHTML = `
+                    <div style="text-align: center; padding: 60px 20px; color: var(--text-secondary);">
+                        <p style="font-size: 16px;">未找到匹配的网站</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            categories.forEach(cat => {
+                const catSites = filtered.filter(s => s.category === cat.id);
+                if (catSites.length === 0) return;
+
+                html += `
+                    <section class="category-section" id="cat-${cat.id}">
+                        <div class="category-header">
+                            <h2 class="category-title">${cat.name}</h2>
+                            <span class="category-count">${catSites.length}</span>
+                        </div>
+                        <div class="sites-grid">
+                            ${catSites.map(site => `
+                                <a href="${site.url}" target="_blank" rel="noopener" class="site-card">
+                                    <div class="site-name">${site.name}</div>
+                                    <div class="site-desc">${site.desc}</div>
+                                </a>
+                            `).join('')}
+                        </div>
+                    </section>
+                `;
+            });
+
+            contentArea.innerHTML = html;
+        }
+
+        function performSearch() {
+            const keyword = searchInput.value.trim();
+            if (keyword) {
+                const searchUrl = searchEngines[currentEngine].url + encodeURIComponent(keyword);
+                window.open(searchUrl, '_blank');
+            }
+        }
+
+        function updateActiveNav() {
+            const sections = document.querySelectorAll('.category-section');
+            const navItems = document.querySelectorAll('.category-item');
+
+            let current = '';
+            const scrollTop = window.scrollY + 150;
+
+            sections.forEach(section => {
+                if (scrollTop >= section.offsetTop - 100) {
+                    current = section.id;
+                }
+            });
+
+            navItems.forEach(item => {
+                const catId = item.getAttribute('href').substring(1);
+                if (catId === current) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+
+        // 搜索输入
+        searchInput.addEventListener('input', (e) => {
+            renderContent(e.target.value.trim());
+        });
+
+        // 回车搜索
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        // 搜索按钮
+        searchBtn.addEventListener('click', performSearch);
+
+        // 搜索引擎选择器
+        engineBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            engineSelector.classList.toggle('open');
+        });
+
+        document.addEventListener('click', () => {
+            engineSelector.classList.remove('open');
+        });
+
+        engineDropdown.addEventListener('click', (e) => {
+            const option = e.target.closest('.engine-option');
+            if (option) {
+                currentEngine = option.dataset.engine;
+                engineBtn.innerHTML = `<span>${option.dataset.name}</span><span class="arrow">▼</span>`;
+                document.querySelectorAll('.engine-option').forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+                engineSelector.classList.remove('open');
+            }
+        });
+
+        // 滚动时更新导航高亮
+        window.addEventListener('scroll', updateActiveNav);
+
+        // 初始化
+        renderNavigation();
+        renderContent();
+    </script>
+
+    <style>
+        .inland-security-footer {
+            position: fixed;
+            z-index: 10;
+            bottom: 0;
+            right: 0;
+            width: fit-content;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .tooltip-container {
+            position: relative;
+        }
+
+        .trigger-content {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            background-color: transparent;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .minimax-link {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 300;
+            color: #adadad;
+            text-decoration: none;
+        }
+
+        .minimax-link:visited {
+            color: #adadad;
+        }
+
+        .minimax-link:hover {
+            color: #666666;
+        }
+
+        .tooltip-content {
+            position: absolute;
+            bottom: 100%;
+            right: 0;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            padding-bottom: 16px;
+            font-size: 12px;
+            line-height: 17px;
+            background-color: #fafafa;
+            border-radius: 12px;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            color: #171717;
+        }
+
+        .tooltip-content::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            right: 0;
+            height: 16px;
+        }
+
+        .tooltip-container:hover .tooltip-content {
+            display: flex;
+        }
+
+        .info-section {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .beian-link {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #171717;
+        }
+
+        .beian-icon {
+            width: 14px;
+            height: 14px;
+            margin-right: 2px;
+        }
+
+        .underline-text {
+            color: #171717;
+            text-decoration: underline;
+        }
+
+        .underline-text:hover {
+            color: #000000;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .trigger-content {
+                background-color: transparent;
+            }
+
+            .minimax-link,
+            .minimax-link:visited {
+                color: #666666;
+            }
+
+            .minimax-link:hover {
+                color: #adadad;
+            }
+
+            .tooltip-content {
+                background-color: #262626;
+                color: #ededed;
+            }
+
+            .beian-link,
+            .underline-text {
+                color: #ededed;
+            }
+
+            .underline-text:hover {
+                color: #ffffff;
+            }
+        }
+    </style>
+    <div class="inland-security-footer">
+        <div class="tooltip-container">
+            <div class="trigger-content">
+                <a href="https://www.minimaxi.com/" target="_blank" rel="noreferrer" class="minimax-link">
+                    <span>© 2026 MiniMax</span>
+                </a>
+            </div>
+            <div class="tooltip-content">
+                <section class="info-section">
+                    <span>上海稀宇科技有限公司</span>
+                </section>
+                <section class="info-section">
+                    <a class="beian-link" href="https://www.beian.gov.cn/portal/registerSystemInfo?recordcode=31010402010179" target="_blank" rel="noreferrer">
+                        <img alt="hailuo-beian-icon" src="https://cdn.hailuoai.com/hailuo-video-web/public_assets/223037d3-79fd-4db0-a456-749f38a6a14b.png" class="beian-icon">
+                        <span class="underline-text">沪公网安备31010402010179号</span>
+                    </a>
+                    <a href="https://beian.miit.gov.cn/" target="_blank" rel="noreferrer" class="underline-text">
+                        沪ICP备2023003282号-38
+                    </a>
+                </section>
+                <section class="info-section">
+                    <span>模型名称：MiniMax</span>
+                    <span>备案号：Shanghai-MiniMax-202505230046</span>
+                </section>
+                <section class="info-section">
+                    <a href="https://agent.minimaxi.com/doc/zh/terms-of-service.html" target="_blank" rel="noreferrer" class="underline-text">
+                        用户协议
+                    </a>
+                    <a href="https://agent.minimaxi.com/doc/zh/privacy-policy.html" target="_blank" rel="noreferrer" class="underline-text">
+                        隐私政策
+                    </a>
+                </section>
+            </div>
+        </div>
+    </div>
+
+<script>
+/**
+ * Iframe 元素高亮注入脚本
+ * 需要在目标网站中引入此脚本来支持跨域 iframe 高亮功能
+ *
+ * 使用方法：
+ * 1. 将此脚本添加到目标网站的 HTML 中
+ * 2. 或通过浏览器扩展、用户脚本等方式注入
+ */
+
+(function () {
+  "use strict";
+
+  // 检查是否在 iframe 中
+  if (window.self === window.top) {
+    return; // 不在 iframe 中，不执行
+  }
+
+  // 检查是否已经初始化过
+  if (window.__iframeHighlightInitialized) {
+    return;
+  }
+  window.__iframeHighlightInitialized = true;
+  console.log("Iframe 高亮脚本已加载");
+
+  // 创建高亮覆盖层
+  var overlay = document.createElement("div");
+  overlay.id = "iframe-highlight-overlay";
+  overlay.style.cssText = "\n    position: fixed;\n    top: 0;\n    left: 0;\n    width: 100vw;\n    height: 100vh;\n    pointer-events: none;\n    z-index: 999999;\n    overflow: hidden;\n  ";
+
+  // 创建悬停高亮框（虚线边框）
+  var highlightBox = document.createElement("div");
+  highlightBox.id = "iframe-highlight-box";
+  highlightBox.style.cssText = "\n    position: absolute;\n    border: 2px dashed #007AFF;\n    background: rgba(0, 122, 255, 0.08);\n    pointer-events: none;\n    display: none;\n    transition: all 0.1s ease;\n    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.8);\n    border-radius: 2px;\n  ";
+
+  // 创建选中节点的常驻高亮框（实线边框）
+  var selectedBox = document.createElement("div");
+  selectedBox.id = "iframe-selected-box";
+  selectedBox.style.cssText = "\n    position: absolute;\n    border: 2px solid #007AFF;\n    pointer-events: none;\n    display: none;\n    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.9), 0 0 8px rgba(255, 107, 53, 0.4);\n    border-radius: 2px;\n    z-index: 1000000;\n  ";
+
+  // 创建悬停标签显示
+  var tagLabel = document.createElement("div");
+  tagLabel.id = "iframe-tag-label";
+  tagLabel.style.cssText = "\n    position: absolute;\n    background: #007AFF;\n    color: white;\n    padding: 2px 6px;\n    font-size: 11px;\n    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;\n    border-radius: 2px;\n    pointer-events: none;\n    display: none;\n    white-space: nowrap;\n    z-index: 1000001;\n    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);\n    font-weight: 500;\n  ";
+
+  // 创建选中节点标签
+  var selectedLabel = document.createElement("div");
+  selectedLabel.id = "iframe-selected-label";
+  selectedLabel.style.cssText = "\n    position: absolute;\n    background: #007AFF;\n    color: white;\n    padding: 3px 8px;\n    font-size: 11px;\n    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;\n    border-radius: 3px;\n    pointer-events: none;\n    display: none;\n    white-space: nowrap;\n    z-index: 1000002;\n    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);\n    font-weight: 600;\n  ";
+  overlay.appendChild(highlightBox);
+  overlay.appendChild(selectedBox);
+  overlay.appendChild(tagLabel);
+  overlay.appendChild(selectedLabel);
+  document.body.appendChild(overlay);
+
+  // 存储当前选中的元素
+  var selectedElement = null;
+  var highlightEnabled = false;
+
+  // 更新选中元素的高亮显示
+  function updateSelectedHighlight(element) {
+    console.log("updateSelectedHighlight called with:", element);
+    if (!element) {
+      selectedBox.style.display = "none";
+      selectedLabel.style.display = "none";
+      selectedElement = null;
+      console.log("Cleared selected highlight");
+      return;
+    }
+    selectedElement = element;
+    var rect = element.getBoundingClientRect();
+    console.log("Selected element rect:", rect);
+
+    // 更新选中高亮框位置
+    selectedBox.style.display = "block";
+    selectedBox.style.left = "".concat(rect.left - 2, "px");
+    selectedBox.style.top = "".concat(rect.top - 2, "px");
+    selectedBox.style.width = "".concat(rect.width + 4, "px");
+    selectedBox.style.height = "".concat(rect.height + 4, "px");
+
+    // 更新选中标签位置和内容
+    selectedLabel.style.display = "block";
+    selectedLabel.textContent = "\u2713 <".concat(element.tagName.toLowerCase(), ">");
+
+    // 计算标签位置，确保不超出视窗
+    var labelTop = rect.top - 28;
+    var labelLeft = rect.left;
+
+    // 如果标签会超出顶部，显示在元素下方
+    if (labelTop < 5) {
+      labelTop = rect.bottom + 5;
+    }
+
+    // 如果标签会超出右侧，向左调整
+    var labelWidth = selectedLabel.offsetWidth || 100; // 预估宽度
+    if (labelLeft + labelWidth > window.innerWidth - 10) {
+      labelLeft = window.innerWidth - labelWidth - 10;
+    }
+    selectedLabel.style.left = "".concat(Math.max(5, labelLeft), "px");
+    selectedLabel.style.top = "".concat(labelTop, "px");
+    console.log("Selected highlight positioned at:", {
+      left: selectedBox.style.left,
+      top: selectedBox.style.top,
+      width: selectedBox.style.width,
+      height: selectedBox.style.height
+    });
+  }
+  function getElementSelector(element) {
+    if (!(element instanceof Element)) throw new Error('Argument must be a DOM element');
+    var segments = [];
+    var current = element;
+    while (current !== document.documentElement) {
+      var selector = '';
+      // 优先检查唯一ID
+      if (current.id && document.querySelectorAll("#".concat(current.id)).length === 1) {
+        segments.unshift("#".concat(current.id));
+        break; // ID唯一，无需继续向上
+      }
+
+      // 生成类名选择器（取第一个有效类名）
+      var classes = Array.from(current.classList).filter(function (c) {
+        return !c.startsWith('js-');
+      });
+      var className = classes.length > 0 ? ".".concat(classes[0]) : '';
+
+      // 生成位置索引（nth-child）
+      var tag = current.tagName.toLowerCase();
+      if (!className) {
+        var siblings = Array.from(current.parentNode.children);
+        var index = siblings.findIndex(function (el) {
+          return el === current;
+        }) + 1;
+        selector = "".concat(tag, ":nth-child(").concat(index, ")");
+      } else {
+        selector = className;
+      }
+      segments.unshift(selector);
+      current = current.parentElement;
+    }
+
+    // 处理根元素
+    if (current === document.documentElement) {
+      segments.unshift('html');
+    }
+    return segments.join(' > ');
+  }
+
+  // 获取元素文本内容
+  function getElementText(element) {
+    var _element$textContent;
+    if (element.tagName === "INPUT") {
+      return element.value || element.placeholder || "";
+    }
+    if (element.tagName === "TEXTAREA") {
+      return element.value || element.placeholder || "";
+    }
+    var text = ((_element$textContent = element.textContent) === null || _element$textContent === void 0 ? void 0 : _element$textContent.trim()) || "";
+    return text.length > 50 ? text.substring(0, 50) + "..." : text;
+  }
+
+  // 获取元素属性信息
+  function getElementAttributes(element) {
+    var attrs = {};
+    for (var i = 0; i < element.attributes.length; i++) {
+      var attr = element.attributes[i];
+      attrs[attr.name] = attr.value;
+    }
+    return attrs;
+  }
+
+  // 鼠标悬停事件处理
+  function handleMouseOver(e) {
+    if (!highlightEnabled) return;
+    var target = e.target;
+    if (!target || target === overlay || target === highlightBox || target === tagLabel || target === selectedBox || target === selectedLabel) {
+      return;
+    }
+
+    // 避免高亮 html 和 body 元素
+    if (target === document.documentElement || target === document.body) {
+      return;
+    }
+
+    // 如果是已选中的元素，不显示悬停高亮
+    if (target === selectedElement) {
+      highlightBox.style.display = "none";
+      tagLabel.style.display = "none";
+      return;
+    }
+    var rect = target.getBoundingClientRect();
+    var selector = getElementSelector(target);
+    var text = getElementText(target);
+    var attributes = getElementAttributes(target);
+
+    // 更新悬停高亮框位置
+    highlightBox.style.display = "block";
+    highlightBox.style.left = "".concat(rect.left - 2, "px");
+    highlightBox.style.top = "".concat(rect.top - 2, "px");
+    highlightBox.style.width = "".concat(rect.width + 4, "px");
+    highlightBox.style.height = "".concat(rect.height + 4, "px");
+
+    // 更新标签位置和内容
+    tagLabel.style.display = "block";
+    tagLabel.textContent = "<".concat(target.tagName.toLowerCase(), ">");
+
+    // 计算标签位置，确保不超出视窗
+    var labelTop = rect.top - 22;
+    var labelLeft = rect.left;
+
+    // 如果标签会超出顶部，显示在元素下方
+    if (labelTop < 0) {
+      labelTop = rect.bottom + 5;
+    }
+
+    // 如果标签会超出右侧，向左调整
+    if (labelLeft + tagLabel.offsetWidth > window.innerWidth) {
+      labelLeft = window.innerWidth - tagLabel.offsetWidth - 5;
+    }
+    tagLabel.style.left = "".concat(Math.max(0, labelLeft), "px");
+    tagLabel.style.top = "".concat(labelTop, "px");
+
+    // 发送消息到父窗口
+    var elementInfo = {
+      tagName: target.tagName.toLowerCase(),
+      rect: {
+        left: rect.left,
+        top: rect.top,
+        right: rect.right,
+        bottom: rect.bottom,
+        width: rect.width,
+        height: rect.height,
+        x: rect.x,
+        y: rect.y
+      },
+      selector: selector,
+      text: text,
+      attributes: attributes,
+      url: window.location.href,
+      path: window.location.pathname,
+      timestamp: Date.now()
+    };
+    try {
+      window.parent.postMessage({
+        type: "iframe-element-hover",
+        data: elementInfo,
+        source: "iframe-highlight-injector"
+      }, "*");
+    } catch (error) {
+      console.warn("无法发送消息到父窗口:", error);
+    }
+  }
+
+  // 鼠标离开事件处理
+  function handleMouseOut(e) {
+    if (!highlightEnabled) return;
+    var relatedTarget = e.relatedTarget;
+
+    // 如果鼠标移动到高亮相关元素上，不隐藏高亮
+    if (relatedTarget && (relatedTarget === highlightBox || relatedTarget === tagLabel || relatedTarget === overlay || relatedTarget === selectedBox || relatedTarget === selectedLabel)) {
+      return;
+    }
+    highlightBox.style.display = "none";
+    tagLabel.style.display = "none";
+    try {
+      window.parent.postMessage({
+        type: "iframe-element-hover",
+        data: null,
+        source: "iframe-highlight-injector"
+      }, "*");
+    } catch (error) {
+      console.warn("无法发送消息到父窗口:", error);
+    }
+  }
+
+  // 点击事件处理
+  function handleClick(e) {
+    var target = e.target;
+    if (!target || target === overlay || target === highlightBox || target === tagLabel || target === selectedBox || target === selectedLabel) {
+      return;
+    }
+
+    // 避免处理 html 和 body 元素
+    if (target === document.documentElement || target === document.body) {
+      return;
+    }
+
+    // 检查是否是交互元素，这些元素需要保留默认行为
+    var isInteractiveElement = ['input', 'textarea', 'select', 'button', 'a'].includes(target.tagName.toLowerCase());
+
+    // 如果高亮功能启用，对于非交互元素阻止默认行为和事件传播
+    if (highlightEnabled) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    var rect = target.getBoundingClientRect();
+    var selector = getElementSelector(target);
+    var text = getElementText(target);
+    var attributes = getElementAttributes(target);
+    console.log("Element clicked:", {
+      tagName: target.tagName,
+      selector: selector,
+      rect: rect
+    });
+
+    // 立即更新选中高亮
+    updateSelectedHighlight(target);
+
+    // 隐藏悬停高亮，因为现在是选中状态
+    highlightBox.style.display = "none";
+    tagLabel.style.display = "none";
+    var elementInfo = {
+      tagName: target.tagName.toLowerCase(),
+      rect: {
+        left: rect.left,
+        top: rect.top,
+        right: rect.right,
+        bottom: rect.bottom,
+        width: rect.width,
+        height: rect.height,
+        x: rect.x,
+        y: rect.y
+      },
+      selector: selector,
+      text: text,
+      attributes: attributes,
+      url: window.location.href,
+      path: window.location.pathname,
+      timestamp: Date.now()
+    };
+    try {
+      window.parent.postMessage({
+        type: "iframe-element-click",
+        data: elementInfo,
+        source: "iframe-highlight-injector"
+      }, "*");
+    } catch (error) {
+      console.warn("无法发送消息到父窗口:", error);
+    }
+  }
+
+  // 监听来自父窗口的消息
+  function handleParentMessage(event) {
+    console.log("Received message from parent:", event.data);
+    if (event.data.type === "iframe-highlight-toggle") {
+      var enabled = event.data.enabled;
+      console.log("Highlight toggle:", enabled);
+      if (enabled) {
+        enableHighlight();
+      } else {
+        disableHighlight();
+      }
+    } else if (event.data.type === "enable-iframe-highlight") {
+      console.log("Enable iframe highlight");
+      enableHighlight();
+    } else if (event.data.type === "disable-iframe-highlight") {
+      console.log("Disable iframe highlight");
+      disableHighlight();
+    } else if (event.data.type === "toggle-iframe-highlight") {
+      var _enabled = event.data.enabled !== undefined ? event.data.enabled : !highlightEnabled;
+      console.log("Toggle iframe highlight to:", _enabled);
+      if (_enabled) {
+        enableHighlight();
+      } else {
+        disableHighlight();
+      }
+    } else if (event.data.type === "update-selected-element") {
+      var selector = event.data.selector;
+      console.log("Update selected element with selector:", selector);
+      if (selector) {
+        try {
+          var element = document.querySelector(selector);
+          console.log("Found element by selector:", element);
+          updateSelectedHighlight(element);
+        } catch (error) {
+          console.warn("Failed to select element:", error);
+          updateSelectedHighlight(null);
+        }
+      } else {
+        updateSelectedHighlight(null);
+      }
+    } else if (event.data.type === "clear-selected-element") {
+      console.log("Clear selected element");
+      updateSelectedHighlight(null);
+    }
+  }
+
+  // 启用高亮功能
+  function enableHighlight() {
+    console.log("Enabling highlight");
+    document.addEventListener("mouseover", handleMouseOver, true);
+    document.addEventListener("mouseout", handleMouseOut, true);
+    document.addEventListener("click", handleClick, true);
+    highlightEnabled = true;
+    overlay.style.display = "block";
+  }
+
+  // 禁用高亮功能
+  function disableHighlight() {
+    console.log("Disabling highlight");
+    highlightEnabled = false;
+    // 保持事件监听器，但通过 highlightEnabled 变量控制行为
+    // 这样可以保留选中状态的显示
+    highlightBox.style.display = "none";
+    tagLabel.style.display = "none";
+    // 不隐藏 selectedBox 和 selectedLabel，保留选中状态
+  }
+
+  // 完全禁用高亮功能（移除所有监听器）
+  function fullyDisableHighlight() {
+    console.log("Fully disabling highlight");
+    highlightEnabled = false;
+    document.removeEventListener("mouseover", handleMouseOver, true);
+    document.removeEventListener("mouseout", handleMouseOut, true);
+    document.removeEventListener("click", handleClick, true);
+    overlay.style.display = "none";
+    highlightBox.style.display = "none";
+    tagLabel.style.display = "none";
+    selectedBox.style.display = "none";
+    selectedLabel.style.display = "none";
+  }
+
+  // 添加事件监听
+  enableHighlight();
+  window.addEventListener("message", handleParentMessage);
+
+  // 暴露全局函数供外部调用
+  window.__iframeHighlightControl = {
+    enable: enableHighlight,
+    disable: disableHighlight,
+    fullyDisable: fullyDisableHighlight,
+    isEnabled: function isEnabled() {
+      return highlightEnabled;
+    },
+    getSelectedElement: function getSelectedElement() {
+      return selectedElement;
+    },
+    updateSelected: updateSelectedHighlight,
+    // 通过消息发送开关控制
+    sendToggleMessage: function sendToggleMessage(enabled) {
+      window.parent.postMessage({
+        type: 'iframe-highlight-status',
+        enabled: enabled || highlightEnabled,
+        source: 'iframe-highlight-injector'
+      }, '*');
+    }
+  };
+
+  // 通知父窗口脚本已加载
+  try {
+    window.parent.postMessage({
+      type: "iframe-highlight-ready",
+      data: {
+        url: window.location.href,
+        userAgent: navigator.userAgent,
+        timestamp: Date.now()
+      },
+      source: "iframe-highlight-injector"
+    }, "*");
+  } catch (error) {
+    console.warn("无法发送就绪消息到父窗口:", error);
+  }
+
+  // 清理函数
+  window.__iframeHighlightCleanup = function () {
+    fullyDisableHighlight();
+    window.removeEventListener("message", handleParentMessage);
+    if (overlay.parentElement) {
+      overlay.parentElement.removeChild(overlay);
+    }
+    delete window.__iframeHighlightInitialized;
+    delete window.__iframeHighlightCleanup;
+  };
+})();
+
+</script>
+</body>
+</html>
