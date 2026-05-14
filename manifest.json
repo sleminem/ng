@@ -1,7 +1,7 @@
 {
     "@platforms": ["android", "iPhone", "iPad"],
-    "id" : "H532D2A46",/*应用的标识*/
-    "name" : "navigation2026",/*应用名称，程序桌面图标名称*/
+    "id" : "",/*应用的标识*/
+    "name" : "navigationv2",/*应用名称，程序桌面图标名称*/
     "version": {
         "name": "1.0",/*应用版本名称*/
         "code": "100"
